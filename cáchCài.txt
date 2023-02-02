@@ -1,0 +1,51 @@
+cài đặt mySQL về máy, xem video youtube lập trình cùng mosh đi :>
+    host: "localhost",
+    user: "root",
+    password: "pD12&^51@!adad",
+    database: "iot"
+    --------------------
+    create database iot;
+    use iot;
+    drop table current_state;
+    drop table distance_logs;
+    create table current_state (
+      id int DEFAULT 1,
+        state int DEFAULT 1,
+        timeStamp datetime DEFAULT CURRENT_TIMESTAMP,
+        CHECK (state=1 OR state =2 or state =3)
+    );
+    SET GLOBAL time_zone = '+7:00';
+    INSERT INTO current_state (state) VALUES(1);
+    UPDATE current_state set state = 1, timeStamp = CURRENT_TIMESTAMP;
+    select * from current_state;
+
+
+    create table traffic_logs (
+      id int primary key auto_increment,
+        count_traffic_ int,
+        timeStamp datetime
+    );
+    INSERT INTO traffic_logs (count_traffic_, timeStamp) VALUES (3, CURRENT_TIMESTAMP);
+    select * from traffic_logs;
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'pD12&^51@!adad';
+    flush privileges;
+
+    vào EDIT - preference - kéo xuống cuối tắt safe update mode gì đấy
+
+------------------------------------------------------------------------
+
+tải + cài nodejs 
+  https://nodejs.org/dist/v16.15.0/node-v16.15.0-x64.msi
+
+bật terminal tại folder này
+  npm install --save express body-parser
+  npm install mysql
+  npm install mqtt --save
+  npm install -g nodemon
+
+chạy file
+  nodemon .\server.js
+  or 
+  node .\server.js
+
+vào http://localhost:2222/intro

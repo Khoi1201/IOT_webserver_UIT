@@ -1,0 +1,41 @@
+body {
+  background-color: #FFF3E4;
+}
+
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  background-color: #6B4F4F;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  max-width: 140px;
+}
+
+li {
+  /* float: left; */
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+li a {
+
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  margin: 5px;
+}
+
+li a:hover:not(.active) {
+  background-color: #483434;
+}
+
+li a.active {
+  background-color: #EED6C4;
+  color: #483434;
+  border-radius: 5px;
+}

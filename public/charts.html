@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>charts</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<body>
+  <header>
+    <ul class="navbar">
+      <li><a href="/intro">Intro</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/main">Main</a></li>
+      <li><a class="active" href="/charts">Charts</a></li>
+      <li><a href="/logs">Logs</a></li>
+    </ul>
+  </header>
+
+  <div style="margin-left:150px;padding:1px 16px;height:1000px;">
+    <h1>Traffic chart</h1>
+    <canvas id="traffic logs" style="width:100%;max-width:800px"></canvas>
+  </div>
+  
+  <script>
+    let yValuesTraffic = []
+    let xValues = []
+
+    function getDataAndDrawChart() {
+      fetch('/api/charts', {
+        method: "POST"
+      })
+        .then(res => res.json())
+        .then(data => {
+          for (let i = 0; i < data.length; i++) {
+            yValuesTraffic.push(data[i].count_traffic_)
+            const dateText = new Date(data[i].timeStamp)
+            //xValues.push(dateText.getDate() + "/" + (dateText.getMonth() + 1) + "/" + dateText.getFullYear() + " " + dateText.getHours() + ":" + (dateText.getMinutes() < 10 ? "0" + dateText.getMinutes() : dateText.getMinutes()))
+            xValues.push(dateText.getHours() + ":" + (dateText.getMinutes() < 10 ? "0" + dateText.getMinutes() : dateText.getMinutes()) + ":" + (dateText.getSeconds() < 10 ? "0" + dateText.getSeconds() : dateText.getSeconds()))
+          }
+          new Chart("traffic logs", {
+            type: "line",
+            data: {
+              labels: xValues,
+              datasets: [{
+                fill: false,
+                //lineTension: 0,
+                backgroundColor: "rgba(10,10,255,1.0)",
+                borderColor: "grey",
+                data: yValuesTraffic
+              }]
+            },
+            options: {
+              legend: { display: false },
+              scales: {
+                yAxes: [{ ticks: { min: 0, max: 16 } }],
+              }, title: {
+                display: false,
+                text: "Traffic logs"
+              }
+            }
+          })
+
+        })
+        .catch(err => console.log(err));
+    }
+
+    getDataAndDrawChart()
+
+  </script>
+
+</body>
+
+</html>

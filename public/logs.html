@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>logs</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <header>
+    <ul class="navbar">
+      <li><a href="/intro">Intro</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a href="/main">Main</a></li>
+      <li><a href="/charts">Charts</a></li>
+      <li><a class="active" href="/logs">Logs</a></li>
+    </ul>
+  </header>
+
+  <script>
+    const heading = document.createElement('h1')
+    heading.textContent = "Traffic logs"
+    heading.style.cssText = "  margin-left: 175px;"
+
+    const table = document.createElement('table')
+    table.id = "idOfTable"
+    table.style.cssText = ''
+    //console.log(data)
+    const row_labels = document.createElement('tr')
+    const id_label = document.createElement('th')
+    const count_traffic_label = document.createElement('th')
+    const timeStamp_label = document.createElement('th')
+    id_label.textContent = "ID"
+    count_traffic_label.textContent = "Counter"
+    timeStamp_label.textContent = "Timestamp"
+
+    row_labels.append(id_label, count_traffic_label, timeStamp_label)
+    table.append(row_labels)
+
+    document.body.append(table)
+
+
+    function getDataAndDrawDashboard() {
+      fetch('/api/logs', {
+        method: "POST"
+      })
+        .then(res => res.json())
+        .then(data => {
+          for (let i = 0; i < data.length; i++) {
+            const table_row = document.createElement('tr')
+            const id = document.createElement('td')
+            const count_traffic = document.createElement('td')
+            const timeStamp = document.createElement('td')
+            id.textContent = i + 1
+            count_traffic.textContent = data[i].count_traffic_
+
+            const dateText = new Date(data[i].timeStamp)
+            timeStamp.textContent = dateText.getDate() + "/" + (dateText.getMonth() + 1) + "/" + dateText.getFullYear() + " " + dateText.getHours() + ":" + (dateText.getMinutes() < 10 ? "0" + dateText.getMinutes() : dateText.getMinutes())
+
+            table_row.append(id, count_traffic, timeStamp)
+            table.append(table_row)
+          }
+        })
+        .catch(err => console.log(err));
+    }
+
+    getDataAndDrawDashboard()
+    // document.body.append(heading)
+  </script>
+
+</body>
+
+</html>

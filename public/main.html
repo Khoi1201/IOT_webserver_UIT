@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>main</title>
+  <link rel="stylesheet" href="navbar.css">
+</head>
+
+<body>
+  <header>
+    <ul class="navbar">
+      <li><a href="/intro">Intro</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li><a class="active" href="/main">Main</a></li>
+      <li><a href="/charts">Charts</a></li>
+      <li><a href="/logs">Logs</a></li>
+    </ul>
+  </header>
+  <table style="margin-left:150px;padding:1px 16px;">
+    <tr>
+      <td>
+        <div>
+          <form>
+            <label>
+              <h1>Change light state to</h1>
+            </label>
+            <button id="state 1">
+              <h1>1</h1>
+            </button>
+            <button id="state 2">
+              <h1>2</h1>
+            </button>
+            <button id="state 3">
+              <h1>3</h1>
+            </button>
+            <div class="result">
+              <h1>Current state:...</h1>
+            </div>
+            <img id="img-traffic-light" src="./images/traffic_light_006 - normal.jpg" height="400px" width="400px">
+            <div>
+              <p>Instructions:</p>
+              <p>State 1: normal mode, auto release Y street traffic when detect traffic jam on Y</p>
+              <p>State 2: release Y mode, stop X and let Y street go until change state</p>
+              <p>State 3: release X mode, stop Y and let X street go until change state</p>
+            </div>
+          </form>
+        </div>
+      </td>
+      <td style="padding: 0px 0px 700px 100px;">
+        <h1 id="trafficState">Traffic state: </h1>
+      </td>
+    </tr>
+  </table>
+
+  <script>
+    document.getElementById("state 1").addEventListener("click", stateTo1);
+    document.getElementById("state 2").addEventListener("click", stateTo2);
+    document.getElementById("state 3").addEventListener("click", stateTo3);
+
+    function getDataAndShowState() {
+      fetch('/api/dashboard', {
+        method: "POST"
+      })
+        .then(res => res.json())
+        .then(data => {
+          let now = new Date()
+          let old = new Date(data[0].timeStamp)
+          let dif = Math.floor(now - old) / 1000
+          console.log(dif)
+          let trafficState
+          if (data[0].count_traffic_ < 4) trafficState = "Low"
+          else if (data[0].count_traffic_ >= 4 && data[0].count_traffic_ <8) trafficState = "Medium"
+          else if (data[0].count_traffic_ <= 10) trafficState = "High"
+          else trafficState = "STUCK"
+
+
+          if (dif < 30) {
+            document.getElementById("trafficState").textContent = "Traffic state: " + trafficState
+          }
+          else {
+            document.getElementById("trafficState").textContent = "Traffic state: " + "sensor currently OFF"
+          }
+        })
+        .catch(err => console.log(err));
+    }
+    getDataAndShowState()
+
+    setInterval(() => location.reload(), 10000)
+
+    function getState() {
+      fetch('/api/getState', {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          const { state } = data;
+          document.querySelector(
+            ".result"
+          ).innerHTML = `<h1>Current state: ${state}</h1>`;
+          if (state == 1) { document.getElementById("img-traffic-light").src = "./images/traffic_light_006 - normal.jpg" }
+          else if (state == 2) { document.getElementById("img-traffic-light").src = "./images/traffic_light_006 - green.jpg" }
+          else { document.getElementById("img-traffic-light").src = "./images/traffic_light_006 - red.jpg" }
+        })
+        .catch(err => console.log(err));
+    }
+
+    function stateTo1(e) {
+      e.preventDefault();
+      fetch('/api/state1', {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          state: 1
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const { state } = data;
+          document.querySelector(
+            ".result"
+          ).innerHTML = `<h1>Current state: ${state}</h1>`;
+          document.getElementById("img-traffic-light").src = "./images/traffic_light_006 - normal.jpg"
+
+        })
+        .catch(err => console.log(err));
+    }
+
+    function stateTo2(e) {
+      e.preventDefault();
+      fetch('/api/state2', {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          state: 2
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const { state } = data;
+          document.querySelector(
+            ".result"
+          ).innerHTML = `<h1>Current state: ${state}</h1>`;
+          document.getElementById("img-traffic-light").src = "./images/traffic_light_006 - green.jpg"
+        })
+        .catch(err => console.log(err));
+    }
+
+    function stateTo3(e) {
+      e.preventDefault();
+      fetch('/api/state3', {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          state: 3
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const { state } = data;
+          document.querySelector(
+            ".result"
+          ).innerHTML = `<h1>Current state: ${state}</h1>`;
+          document.getElementById("img-traffic-light").src = "./images/traffic_light_006 - red.jpg"
+        })
+        .catch(err => console.log(err));
+    }
+
+    getState();
+
+  </script>
+</body>
+
+</html>
